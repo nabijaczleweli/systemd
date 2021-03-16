@@ -28,10 +28,6 @@ if ! [[ $KERNEL_INSTALL_MACHINE_ID ]]; then
     exit 0
 fi
 
-if ! [[ -d "$ENTRY_DIR_ABS" ]]; then
-    exit 0
-fi
-
 MACHINE_ID=$KERNEL_INSTALL_MACHINE_ID
 
 BOOT_ROOT=${ENTRY_DIR_ABS%/$MACHINE_ID/$KERNEL_VERSION}
@@ -86,6 +82,13 @@ if [[ -f /etc/kernel/tries ]]; then
     LOADER_ENTRY="$BOOT_ROOT/loader/entries/$MACHINE_ID-$KERNEL_VERSION+$TRIES.conf"
 else
     LOADER_ENTRY="$BOOT_ROOT/loader/entries/$MACHINE_ID-$KERNEL_VERSION.conf"
+fi
+
+if [ "$KERNEL_INSTALL_VERBOSE" -gt 0 ]; then
+    echo "+mkdir -v -p $ENTRY_DIR_ABS"
+    exec mkdir -v -p "$ENTRY_DIR_ABS"
+else
+    exec mkdir -p "$ENTRY_DIR_ABS"
 fi
 
 install -g root -o root -m 0644 "$KERNEL_IMAGE" "$ENTRY_DIR_ABS/linux" || {
